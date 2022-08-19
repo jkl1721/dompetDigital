@@ -10,7 +10,12 @@ Dompet Digital Dashboard
             <h2 class="text-success">Saldo Bapak : Rp. {{ number_format(Auth::user()->wallet, 0, ',', '.') }}</h2>
             <br>
             <div class="row">
-
+                <div class="col-12 col-md-6">
+                    Pemasukan 1 Tahun Terakhir
+                </div>
+                <div class="col-12 col-md-6">
+                    Pengeluaran 1 Tahun Terakhir
+                </div>
             </div>
             <div class="card">
                 <div class="card-header">{{ __('Daftar Transaksi Bapak Yang Belum Di Approved') }}</div>

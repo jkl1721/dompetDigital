@@ -34,9 +34,11 @@ class HomeController extends Controller
         }
         else{
             $transaksi_final = transaksi::where('is_approved', 1)->orderBy('updated_at', 'desc')->get();
+            $transaksi_pemasukan1Tahun = transaksi::where('is_approved', 1)->where('id_jenis', 1)->where('updated_at', '>=', date('Y-m-d', strtotime('-1 year')))->orderBy('updated_at', 'desc')->get();
+            $transaksi_pengeluaran1Tahun = transaksi::where('is_approved', 1)->where('id_jenis', 2)->where('updated_at', '>=', date('Y-m-d', strtotime('-1 year')))->orderBy('updated_at', 'desc')->get();
             $kategori = kategori::all();
             $jenis_transaksi = jenis_transaksi::all();
-            return view('base.dashboard', compact('transaksi', 'transaksi_final', 'kategori', 'jenis_transaksi'));
+            return view('base.dashboard', compact('transaksi','transaksi_pemasukan1Tahun','transaksi_pengeluaran1Tahun', 'transaksi_final', 'kategori', 'jenis_transaksi', ));
         }
     }
 }
