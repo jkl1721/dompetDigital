@@ -34,7 +34,7 @@ Dompet Digital Dashboard
                                     <td>Rp. {{ number_format($item->nominal, 0, ',', '.') }}</td>
                                     <td>
                                         <button id="btnEdit" class="btn btn-sm btn-primary">Edit</button>
-                                        <button id="btnApprove" class="btn btn-sm btn-success">Approve</button>
+                                        <button id="btnApprove" onClick="approveTransaksi('{{ $item->id_transaksi }}')" class="btn btn-sm btn-success">Approve</button>
                                         <button id="btnHapus" onClick="hapusTransaksi('{{ $item->id_transaksi }}')" class="btn btn-sm btn-danger">Hapus</button>
                                     </td>
                                 </tr>
@@ -95,6 +95,70 @@ Dompet Digital Dashboard
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
             }
         });
+        function approveTransaksi(id){
+            var id = id;
+            Swal.fire({
+                title: 'Validasi data transaksi ini?',
+                text: "Transaksi ini akan divalidasi?",
+                icon: 'warning',
+                showCancelButton: true,
+                buttonsStyling: false,
+                customClass: {
+                    confirmButton: "btn btn-primary",
+                    cancelButton: "btn btn-danger"
+                },
+                confirmButtonText: 'Approve'
+            }).then((result) => {
+                if (result.value) {
+                    Swal.fire({
+                        html: '<div class="spinner-border text-info" style="width: 5rem; height: 5rem;" role="status"><span class="visually-hidden">Loading...</span></div><br><br><h5>Sedang Memproses Data...</h5>',
+                        showConfirmButton: false,
+                        showSpinner: true,
+                        allowEscapeKey: false,
+                        allowOutsideClick: false,
+                        onRender: function() {
+                            $('.swal2-content').prepend(sweet_loader);
+                        }
+                    });
+                    $.ajax({
+                        url: "{{ route('approveTransaksi') }}",
+                        type: "POST",
+                        data: {
+                            id: id
+                        },
+                        success: function(data){
+                            swal.close();
+                            if(data.status){
+                                Swal.fire({
+                                    text: "Data transaksi berhasil divalidasi dan di approved!",
+                                    icon: "success",
+                                    buttonsStyling: false,
+                                    confirmButtonText: "Sip!",
+                                    customClass: {
+                                        confirmButton: "btn btn-primary"
+                                    }
+                                }).then((result) => {
+                                    if (result.value) {
+                                        swal.close();
+                                        window.location.reload();
+                                    }
+                                });
+                            }else{
+                                Swal.fire({
+                                    text: "Data transaksi gagal di approve!",
+                                    icon: "error",
+                                    buttonsStyling: false,
+                                    confirmButtonText: "Oke!",
+                                    customClass: {
+                                        confirmButton: "btn btn-primary"
+                                    }
+                                });
+                            }
+                        }
+                    });
+                }
+            })
+        }
         function hapusTransaksi(id){
             var id = id;
             Swal.fire({

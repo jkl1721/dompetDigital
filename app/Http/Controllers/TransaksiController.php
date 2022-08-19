@@ -92,4 +92,16 @@ class TransaksiController extends Controller
             return response()->json(['status' => false, 'message' => $e->getMessage()]);
         }
     }
+    public function approve(Request $request)
+    {
+        try{
+            $transaksi = transaksi::find($request->id);
+            $transaksi->is_approved = 1;
+            $transaksi->save();
+            return response()->json(['status' => true, 'message' => 'Data Transaksi Berhasil Diapproved!']);
+        }
+        catch(\Exception $e){
+            return response()->json(['status' => false, 'message' => $e->getMessage()]);
+        }
+    }
 }

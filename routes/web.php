@@ -19,4 +19,5 @@ Auth::routes();
 Route::middleware('auth')->group(function () {
     Route::get('/', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
     Route::post('hapusTransaksi', [App\Http\Controllers\TransaksiController::class, 'destroy'])->name('hapusTransaksi');
+    Route::post('approveTransaksi', [App\Http\Controllers\TransaksiController::class, 'approve'])->name('approveTransaksi');
 });
