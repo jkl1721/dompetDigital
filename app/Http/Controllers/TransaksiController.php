@@ -4,7 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Models\transaksi;
 use Illuminate\Http\Request;
-
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
+use App\Models\kategori;
+use App\Models\jenis_transaksi;
 class TransaksiController extends Controller
 {
     /**
@@ -78,8 +81,15 @@ class TransaksiController extends Controller
      * @param  \App\Models\transaksi  $transaksi
      * @return \Illuminate\Http\Response
      */
-    public function destroy(transaksi $transaksi)
+    public function destroy(Request $request)
     {
-        //
+        try{
+            $transaksi = transaksi::find($request->id);
+            $transaksi->delete();
+            return response()->json(['status' => true, 'message' => 'Data Transaksi Berhasil Dihapus!']);
+        }
+        catch(\Exception $e){
+            return response()->json(['status' => false, 'message' => $e->getMessage()]);
+        }
     }
 }

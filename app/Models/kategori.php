@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class kategori extends Model
 {
     use HasFactory;
-    protected $table = 'kategori';
+    protected $table = 'kategoris';
     protected $primaryKey = 'id_kategori';
     protected $keyType = 'int';
     public $timestamps = false;

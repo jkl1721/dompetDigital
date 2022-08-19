@@ -22,7 +22,7 @@ class User extends Authenticatable
         'email',
         'password',
     ];
-    protected $table = 'user';
+    protected $table = 'users';
     protected $primaryKey = 'id_user';
     protected $keyType = 'int';
     public $timestamps = false;

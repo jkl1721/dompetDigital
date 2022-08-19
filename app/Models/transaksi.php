@@ -8,8 +8,9 @@ use Illuminate\Database\Eloquent\Model;
 class transaksi extends Model
 {
     use HasFactory;
-    protected $table = 'transaksi';
+    protected $table = 'transaksis';
     protected $primaryKey = 'id_transaksi';
+    protected $keyType = 'string';
     public function users()
     {
         return $this->belongsTo('App\Models\User', 'id_user');
@@ -20,6 +21,6 @@ class transaksi extends Model
     }
     public function kategoris()
     {
-        return $this->belongsTo('App\Models\kategoris', 'id_kategori');
+        return $this->belongsTo('App\Models\kategori', 'id_kategori');
     }
 }
