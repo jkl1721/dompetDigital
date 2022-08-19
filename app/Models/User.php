@@ -22,7 +22,10 @@ class User extends Authenticatable
         'email',
         'password',
     ];
-
+    protected $table = 'user';
+    protected $primaryKey = 'id_user';
+    protected $keyType = 'int';
+    public $timestamps = false;
     /**
      * The attributes that should be hidden for serialization.
      *
@@ -41,4 +44,8 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+    public function transaksis()
+    {
+        return $this->hasMany('App\Models\transaksi', 'id_user');
+    }
 }
