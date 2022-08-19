@@ -13,9 +13,12 @@ return new class extends Migration
      */
     public function up()
     {
+        Schema::dropIfExists('kategoris');
         Schema::create('kategoris', function (Blueprint $table) {
-            $table->id();
-            $table->timestamps();
+            $table->increments('id_kategori');
+            $table->string('nama_kategori',45)->nullable();
+            $table->unsignedInteger('id_jenis');
+            $table->foreign('id_jenis')->references('id_jenis')->on('jenis_transaksis');
         });
     }
 

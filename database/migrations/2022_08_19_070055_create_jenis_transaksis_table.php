@@ -13,9 +13,10 @@ return new class extends Migration
      */
     public function up()
     {
+        Schema::dropIfExists('jenis_transaksis');
         Schema::create('jenis_transaksis', function (Blueprint $table) {
-            $table->id();
-            $table->timestamps();
+            $table->increments('id_jenis');
+            $table->string('nama_jenis',45)->nullable();
         });
     }
 
