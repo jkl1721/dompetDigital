@@ -48,7 +48,7 @@ class KategoriSeeder extends Seeder
             'id_jenis' => 2
         ]);
         DB::table('kategoris')->insert([
-            'nama_kategori' => 'Hutang/Piutang',
+            'nama_kategori' => 'Hutang/Piutang (Pengeluaran)',
             'id_jenis' => 2
         ]);
         DB::table('kategoris')->insert([

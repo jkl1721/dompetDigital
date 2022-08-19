@@ -38,7 +38,40 @@ class TransaksiController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890';
+        $charactersLength = strlen($characters);
+        $randomString = '';
+        for ($i = 0; $i < 8; $i++) {
+            $randomString .= $characters[rand(0, $charactersLength - 1)];
+        }
+        try{
+            $transaksi = new transaksi();
+            $transaksi->id_transaksi = $randomString;
+            $transaksi->id_jenis = $request->jenisTransaksi;
+            $transaksi->id_kategori = $request->kategori;
+            $transaksi->id_user = Auth::user()->id_user;
+            $transaksi->tanggal = $request->tanggal ?? date('Y-m-d');
+            $transaksi->keterangan = $request->keterangan;
+            $transaksi->nominal = $request->nominal;
+            $transaksi->created_at = date('Y-m-d H:i:s');
+            $transaksi->updated_at = date('Y-m-d H:i:s');
+            $transaksi->save();
+            $user = User::find(Auth::user()->id_user);
+            if($request->jenisTransaksi == 1){
+                $user->wallet += $user->saldo;
+            }
+            else{
+                $user->wallet -= $user->saldo;
+                if ($user->wallet < 0){
+                    $user->wallet =0;
+                }
+            }
+            $user->save();
+            return response()->json(['status' => true, 'message' => 'Data Transaksi Berhasil Ditambahkan']);
+        }
+        catch(\Exception $e){
+            return response()->json(['status' => false, 'message' => $e->getMessage()]);
+        }
     }
 
     /**
@@ -85,6 +118,17 @@ class TransaksiController extends Controller
     {
         try{
             $transaksi = transaksi::find($request->id);
+            $user = User::find($transaksi->id_user);
+            if($transaksi->id_jenis == 1){
+                $user->wallet -= $transaksi->nominal;
+                if ($user->wallet < 0){
+                    $user->wallet =0;
+                }
+            }
+            else{
+                $user->wallet += $transaksi->nominal;
+            }
+            $user->save();
             $transaksi->delete();
             return response()->json(['status' => true, 'message' => 'Data Transaksi Berhasil Dihapus!']);
         }

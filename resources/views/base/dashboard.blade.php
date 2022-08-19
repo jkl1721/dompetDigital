@@ -5,15 +5,16 @@ Dompet Digital Dashboard
 @section('content')
 <div class="container">
     <div class="row justify-content-center">
-        <div class="col-md-8">
-            <div class="card">
+        <div class="col-md-11">
+            <button id="btnTambahTransaksi" class="btn btn-primary w-100 br-25">Tambahkan Transaksi Baru</button>
+            <div class="card mt-5">
                 <div class="card-header">{{ __('Dashboard') }}</div>
 
                 <div class="card-body">
                     @if (session('status'))
-                        <div class="alert alert-success" role="alert">
-                            {{ session('status') }}
-                        </div>
+                    <div class="alert alert-success" role="alert">
+                        {{ session('status') }}
+                    </div>
                     @endif
 
                     {{ __('You are logged in!') }}
@@ -22,4 +23,168 @@ Dompet Digital Dashboard
         </div>
     </div>
 </div>
+@endsection
+@section('script')
+@if (session('status'))
+<script>
+    Swal.fire({
+        text: "{{session('status')}}",
+        icon: "success",
+        buttonsStyling: false,
+        confirmButtonText: "Sip!",
+        customClass: {
+            confirmButton: "btn btn-primary btn-primarynew"
+        }
+    });
+</script>
+@endif
+@if (session('error'))
+<script>
+    Swal.fire({
+        text: "{{session('error')}}",
+        icon: "error",
+        buttonsStyling: false,
+        confirmButtonText: "Oke",
+        customClass: {
+            confirmButton: "btn btn-primary btn-primarynew"
+        }
+    });
+</script>
+@endif
+<script>
+    $(document).ready(function() {
+        $('#dataTable').DataTable( {
+            responsive: {
+                details: {
+                    type: 'column'
+                }
+            },
+            columnDefs: [ {
+                className: 'dtr-control',
+                orderable: false,
+                targets:   0
+            } ],
+            order: [ 1, 'asc' ]
+        } );
+    });
+    $.ajaxSetup({
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        }
+    });
+    $('#btnTambahTransaksi').on('click', function(e){
+        Swal.fire({
+            title: 'Tambah Transaksi Baru',
+            icon: 'info',
+            html: `
+            <div class="p-0 m-0">
+                <form id="formTambahTransaksi" method="POST" enctype="multipart/form-data">
+                    <input type="date" id="tanggal" name="tanggal" class="form-control" placeholder="Pilih Tanggal" value="{{ date("Y-m-d") }}">
+                    <br>
+                    <input type="hidden" id="jenisTransaksi" name="jenisTransaksi" value="1">
+                    <button type="button" class="btn br-25 swal2-input btn-success" id="btnPemasukan">Pemasukan</button>
+                    <button type="button" class="btn br-25 swal2-input btn-danger" id="btnPengeluaran">Pengeluaran</button>
+                    <br><br>
+                    <select id="kategori" name="kategori" class="form-control">
+                        <option value="">Pilih Kategori</option>
+                        @foreach ($kategori as $item)
+                        <option value="{{$item->id_kategori}}">{{$item->nama_kategori}}</option>
+                        @endforeach
+                    </select>
+                    <br>
+                    <div class="input-group mb-3">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text">Rp.</span>
+                        </div>
+                        <input type="number" id="nominal" name="nominal"  class="form-control" placeholder="Masukkan Jumlah Harga Transaksi Tanpa Tanda . atau ,">
+                    </div>
+                    <br>
+                    <input type="text" id="keterangan" name="keterangan"  class="form-control" placeholder="Masukkan Keterangan">
+                </form>
+            </div>`,
+            confirmButtonText: 'Tambah',
+            focusConfirm: false,
+            buttonsStyling: false,
+            customClass: {
+                confirmButton: "btn btn-primary br-25 w-100",
+                cancelButton: "btn btn-danger"
+            },
+            preConfirm: () => {
+                const tanggal = Swal.getPopup().querySelector('#tanggal').value
+                const kategori = Swal.getPopup().querySelector('#kategori').value
+                const nominal = Swal.getPopup().querySelector('#nominal').value
+                if (!tanggal || !kategori || !nominal) {
+                    Swal.showValidationMessage(`Periksa data yang bapak masukkan, sepertinya ada yang keliru.`)
+                }
+                return { tanggal: tanggal, kategori: kategori, nominal: nominal }
+            }
+        }).then((result) => {
+            var tanggal = result.value.tanggal
+            var kategori = result.value.kategori
+            var nominal = result.value.nominal
+            var keterangan = result.value.keterangan
+            if(tanggal != null || kategori != '' || nominal != null){
+                var formData = new FormData(document.getElementById('formTambahTransaksi'));
+                Swal.fire({
+                    html: '<div class="spinner-border text-info" style="width: 5rem; height: 5rem;" role="status"><span class="visually-hidden">Loading...</span></div><br><br><h5>Sedang Memproses Data, Tunggu Sebentar...</h5>',
+                    showConfirmButton: false,
+                    showSpinner: true,
+                    allowEscapeKey: false,
+                    allowOutsideClick: false,
+                    onRender: function() {
+                        $('.swal2-content').prepend(sweet_loader);
+                    }
+                });
+                $.ajax({
+                    url: "{{ route('tambahTransaksi') }}",
+                    type: "POST",
+                    data: formData,
+                    cache: false,
+                    processData: false,
+                    contentType : false,
+                    success: function(data){
+                        if(data.status){
+                            Swal.fire({
+                                text: "Data transaksi berhasil ditambahkan",
+                                icon: "success",
+                                buttonsStyling: false,
+                                confirmButtonText: "Sip!",
+                                customClass: {
+                                    confirmButton: "btn btn-primary"
+                                }
+                            }).then((result) => {
+                                if (result.value) {
+                                    swal.close();
+                                    window.location.reload();
+                                }
+                            });
+                        }else{
+                            swal.close();
+                            Swal.fire({
+                                text: "Transaksi gagal di tambahkan, coba lagi",
+                                icon: "error",
+                                buttonsStyling: false,
+                                confirmButtonText: "Oke!",
+                                customClass: {
+                                    confirmButton: "btn btn-primary"
+                                }
+                            });
+                        }
+                    }
+                });
+            }
+        })
+    });
+
+    $('#btnPemasukan').on('click', function(e){
+        $('#jenisTransaksi').val('1')
+        $("#btnPemasukan").addClass("btn-success");
+        $("#btnPengeluaran").removeClass("btn-danger");
+    });
+    $('#btnPengeluaran').on('click', function(e){
+        $('#jenisTransaksi').val('2')
+        $("#btnPemasukan").removeClass("btn-success");
+        $("#btnPengeluaran").addClass("btn-danger");
+    });
+</script>
 @endsection

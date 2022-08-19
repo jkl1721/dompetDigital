@@ -28,12 +28,15 @@ class HomeController extends Controller
      */
     public function index()
     {
+        $transaksi = transaksi::where('is_approved', 0)->orderBy('updated_at', 'desc')->get();
         if(Auth::user()->role == 'Anak'){
-            $transaksi = transaksi::where('is_approved', 0)->orderBy('updated_at', 'desc')->get();
             return view('admin.dashboard', compact('transaksi'));
         }
         else{
-            return view('base.dashboard');
+            $transaksi_final = transaksi::where('is_approved', 1)->orderBy('updated_at', 'desc')->get();
+            $kategori = kategori::all();
+            $jenis_transaksi = jenis_transaksi::all();
+            return view('base.dashboard', compact('transaksi', 'transaksi_final', 'kategori', 'jenis_transaksi'));
         }
     }
 }
