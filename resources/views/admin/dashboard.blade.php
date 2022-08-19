@@ -7,7 +7,7 @@ Dompet Digital Dashboard
     <div class="row justify-content-center">
         <div class="col-md-10">
             <div class="card">
-                <div class="card-header">{{ __('Daftar Transaksi Bapak Yang Belum Di Approved') }}</div>
+                <div class="card-header">{{ __('Daftar Transaksi Bapak Yang Belum Di Approved Anak') }}</div>
 
                 <div class="card-body">
                     <div class="table-responsive">
@@ -33,7 +33,6 @@ Dompet Digital Dashboard
                                     <td>{{ $item->keterangan }}</td>
                                     <td>Rp. {{ number_format($item->nominal, 0, ',', '.') }}</td>
                                     <td>
-                                        <button id="btnEdit" class="btn btn-sm btn-primary">Edit</button>
                                         <button id="btnApprove" onClick="approveTransaksi('{{ $item->id_transaksi }}')" class="btn btn-sm btn-success">Approve</button>
                                         <button id="btnHapus" onClick="hapusTransaksi('{{ $item->id_transaksi }}')" class="btn btn-sm btn-danger">Hapus</button>
                                     </td>

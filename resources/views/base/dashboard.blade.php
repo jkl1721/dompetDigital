@@ -6,18 +6,42 @@ Dompet Digital Dashboard
 <div class="container">
     <div class="row justify-content-center">
         <div class="col-md-11">
-            <button id="btnTambahTransaksi" class="btn btn-primary w-100 br-25">Tambahkan Transaksi Baru</button>
-            <div class="card mt-5">
-                <div class="card-header">{{ __('Dashboard') }}</div>
+            <button id="btnTambahTransaksi" class="btn btn-primary mb-5 w-100 br-25">Tambahkan Transaksi Baru</button>
+            <h2 class="text-success">Saldo Bapak : Rp. {{ number_format(Auth::user()->wallet, 0, ',', '.') }}</h2>
+            <br>
+            <div class="row">
+
+            </div>
+            <div class="card">
+                <div class="card-header">{{ __('Daftar Transaksi Bapak Yang Belum Di Approved') }}</div>
 
                 <div class="card-body">
-                    @if (session('status'))
-                    <div class="alert alert-success" role="alert">
-                        {{ session('status') }}
+                    <div class="table-responsive">
+                        <table class="table table-striped table-bordered py-3 dtr-inline collapsed table-hover" id="dataTable" width="100%" cellspacing="0">
+                            <thead>
+                                <tr>
+                                    <th>ID Transaksi</th>
+                                    <th>Tanggal</th>
+                                    <th>Jenis</th>
+                                    <th>Kategori</th>
+                                    <th>Keterangan</th>
+                                    <th>Nominal</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach ($transaksi as $item)
+                                <tr>
+                                    <td>{{ $item->id_transaksi }}</td>
+                                    <td>{{ $item->tanggal }}</td>
+                                    <td class="{{ $item->jenis_transaksis->nama_jenis == 'Pemasukan' ? 'text-success' : 'text-danger' }}">{{ $item->jenis_transaksis->nama_jenis }}</td>
+                                    <td>{{ $item->kategoris->nama_kategori }}</td>
+                                    <td>{{ $item->keterangan }}</td>
+                                    <td>Rp. {{ number_format($item->nominal, 0, ',', '.') }}</td>
+                                </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
                     </div>
-                    @endif
-
-                    {{ __('You are logged in!') }}
                 </div>
             </div>
         </div>
